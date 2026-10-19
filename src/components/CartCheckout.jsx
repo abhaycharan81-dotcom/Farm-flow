@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from "react";
-import { useAuth } from "../context/AuthContext";
+import { useAuth, authErrorMessage } from "../context/AuthContext";
 import { useCart } from "../context/CartContext";
 import { listenStore, placeOrder } from "../services/db";
 import { formatMoney } from "../utils/constants";
 
 const CartCheckout = ({ onPlaced, onBrowse }) => {
-  const { user } = useAuth();
+  const { user, role, signInAs, switchRole } = useAuth();
   const { items, total, setQty, clear, storeId } = useCart();
   const [customer, setCustomer] = useState({ name: user?.displayName || "", phone: "", address: "" });
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const [authBusy, setAuthBusy] = useState(false);
   // The order must go to the store the cart items came from. The store currently being browsed
   // can differ (or be empty after a refresh, since the cart is now saved), so load the cart's store.
   const [store, setStore] = useState(null);
@@ -20,6 +21,20 @@ const CartCheckout = ({ onPlaced, onBrowse }) => {
   }, [storeId]);
 
   const set = (k) => (e) => setCustomer((c) => ({ ...c, [k]: e.target.value }));
+  const canOrder = user && role === "buyer";
+
+  const continueAsBuyer = async () => {
+    setAuthBusy(true);
+    setError("");
+    try {
+      if (user) await switchRole("buyer");
+      else await signInAs("buyer");
+    } catch (err) {
+      setError(authErrorMessage(err));
+    } finally {
+      setAuthBusy(false);
+    }
+  };
 
   if (!items.length) {
     return (
@@ -35,7 +50,7 @@ const CartCheckout = ({ onPlaced, onBrowse }) => {
 
   const submit = async (e) => {
     e.preventDefault();
-    if (!store) return;
+    if (!store || !canOrder) return;
     setBusy(true);
     setError("");
     try {
@@ -74,6 +89,15 @@ const CartCheckout = ({ onPlaced, onBrowse }) => {
       </ul>
       <p className="cart-total">Total: {formatMoney(total)} <span className="muted">(pay on delivery)</span></p>
 
+      {!canOrder ? (
+        <div>
+          <p className="muted">Sign in is only needed to place your order.</p>
+          <button type="button" className="submit-btn" onClick={continueAsBuyer} disabled={authBusy}>
+            {authBusy ? "Opening sign-in…" : user ? "Continue as buyer" : "Sign in to place order"}
+          </button>
+          {error && <p className="error-text" role="alert">{error}</p>}
+        </div>
+      ) : (
       <form className="create-store-form" onSubmit={submit}>
         <label htmlFor="cname">Your name</label>
         <input id="cname" value={customer.name} onChange={set("name")} autoComplete="name" required />
@@ -84,6 +108,7 @@ const CartCheckout = ({ onPlaced, onBrowse }) => {
         <button className="submit-btn" disabled={busy || !store || closed}>{busy ? "Placing order…" : "Place order"}</button>
         {error && <p className="error-text" role="alert">{error}</p>}
       </form>
+      )}
     </div>
   );
 };

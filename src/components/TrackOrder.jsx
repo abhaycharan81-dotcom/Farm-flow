@@ -7,7 +7,19 @@ import { ORDER_STATUSES, CANCELLED, formatMoney, formatDate } from "../utils/con
 const TrackOrder = () => {
   const { user } = useAuth();
   const [orders, setOrders] = useState(null);
-  useEffect(() => listenBuyerOrders(user.uid, setOrders), [user.uid]);
+  useEffect(() => {
+    if (!user?.uid) return undefined;
+    return listenBuyerOrders(user.uid, setOrders);
+  }, [user?.uid]);
+
+  if (!user) {
+    return (
+      <div>
+        <h3>Track Order</h3>
+        <p className="muted">Order updates will appear here after you sign in and place an order.</p>
+      </div>
+    );
+  }
 
   return (
     <div>

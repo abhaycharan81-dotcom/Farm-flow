@@ -15,7 +15,7 @@ const listen = (path, mapper, cb) =>
     (snap) => cb(mapper(snap.val())),
     (err) => {
       console.error(`RTDB read failed at ${path}:`, err.message);
-      cb(mapper(null));
+      cb(mapper(null), err);
     }
   );
 

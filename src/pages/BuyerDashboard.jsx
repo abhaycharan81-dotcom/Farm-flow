@@ -118,7 +118,8 @@ function Inner({ initialStoreId }) {
       <aside className="sidebar">
         <UserBlock user={user} />
         {renderItems()}
-        <button type="button" className="link-btn" onClick={handleSignOut}>Sign out</button>
+        <button type="button" className="nav-item" onClick={() => navigate("/create-store")}>Create a store</button>
+        {user && <button type="button" className="link-btn" onClick={handleSignOut}>Sign out</button>}
       </aside>
 
       {/* Mobile top bar: current step + profile icon */}
@@ -148,7 +149,8 @@ function Inner({ initialStoreId }) {
         </div>
         <UserBlock user={user} />
         {renderItems()}
-        <button type="button" className="drawer-signout" onClick={handleSignOut}>Sign out</button>
+        <button type="button" className="nav-item" onClick={() => { setMenuOpen(false); navigate("/create-store"); }}>Create a store</button>
+        {user && <button type="button" className="drawer-signout" onClick={handleSignOut}>Sign out</button>}
       </nav>
 
       <main className="main-content">

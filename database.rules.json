@@ -1,0 +1,45 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "users": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": "auth != null && auth.uid === $uid"
+      }
+    },
+    "stores": {
+      ".read": true,
+      "$storeId": {
+        ".write": "auth != null && auth.uid === $storeId"
+      }
+    },
+    "storeProducts": {
+      "$storeId": {
+        ".read": true,
+        ".write": "auth != null && auth.uid === $storeId",
+        "$productId": {
+          "stock": {
+            ".write": "auth != null && data.isNumber() && newData.isNumber() && newData.val() <= data.val()"
+          }
+        }
+      }
+    },
+    "storeOrders": {
+      "$storeId": {
+        ".read": "auth != null && auth.uid === $storeId",
+        "$orderId": {
+          ".write": "auth != null && (auth.uid === $storeId || auth.uid === newData.child('buyerId').val())"
+        }
+      }
+    },
+    "buyerOrders": {
+      "$buyerId": {
+        ".read": "auth != null && auth.uid === $buyerId",
+        "$orderId": {
+          ".write": "auth != null && (auth.uid === $buyerId || auth.uid === newData.child('storeId').val())"
+        }
+      }
+    }
+  }
+}

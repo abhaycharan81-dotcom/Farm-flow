@@ -7,7 +7,7 @@ import BuyerDashboard from "./pages/BuyerDashboard";
 import StorePage from "./pages/StorePage";
 import "./styles/Common.css";
 
-// Only lets the right role through; everyone else goes back to the landing page.
+// Only lets the right role through; everyone else goes back to the public dashboard.
 function Protected({ role, children }) {
   const { user, role: userRole, loading } = useAuth();
   if (loading) return <p className="page-message">Loading…</p>;
@@ -20,9 +20,10 @@ export default function App() {
     <AuthProvider>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Login />} />
+          <Route path="/" element={<BuyerDashboard />} />
+          <Route path="/create-store" element={<Login />} />
           <Route path="/dashboard" element={<Protected role="seller"><SellerDashboard /></Protected>} />
-          <Route path="/buyer-dashboard" element={<Protected role="buyer"><BuyerDashboard /></Protected>} />
+          <Route path="/buyer-dashboard" element={<BuyerDashboard />} />
           {/* The unique link sellers share on WhatsApp / social media */}
           <Route path="/store/:storeId" element={<StorePage />} />
           <Route path="*" element={<Navigate to="/" replace />} />

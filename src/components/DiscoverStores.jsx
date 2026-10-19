@@ -5,8 +5,12 @@ import "../styles/DiscoverStores.css";
 const DiscoverStores = ({ onVisit }) => {
   const [stores, setStores] = useState(null); // null = loading
   const [area, setArea] = useState("");
+  const [loadError, setLoadError] = useState("");
 
-  useEffect(() => listenStores(setStores), []);
+  useEffect(() => listenStores((value, error) => {
+    setStores(value);
+    setLoadError(error ? "Stores are unavailable right now. Please try again later." : "");
+  }), []);
 
   // Ignore half-created records without a name; list open stores before closed ones.
   const visible = (stores || [])
@@ -20,7 +24,8 @@ const DiscoverStores = ({ onVisit }) => {
         onChange={(e) => setArea(e.target.value)} aria-label="Filter stores by area" />
 
       {stores === null && <p className="muted">Loading stores…</p>}
-      {stores && !visible.length && <p className="muted">No stores found{area ? " in that area" : " yet"}.</p>}
+      {loadError && <p className="error-text" role="alert">{loadError}</p>}
+      {!loadError && stores && !visible.length && <p className="muted">No stores found{area ? " in that area" : " yet"}.</p>}
 
       <div className="store-list">
         {visible.map((store) => (

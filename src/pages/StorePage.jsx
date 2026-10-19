@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
-import { useAuth, authErrorMessage } from "../context/AuthContext";
+import { useAuth } from "../context/AuthContext";
 import { CartProvider } from "../context/CartContext";
 import { listenStore } from "../services/db";
 import BuyerDashboard from "./BuyerDashboard";
@@ -16,10 +16,8 @@ import "../styles/Dashboard.css";
 export default function StorePage() {
   const { storeId } = useParams();
   const [params] = useSearchParams();
-  const { user, role, loading, signInAs, switchRole } = useAuth();
+  const { user, role, loading } = useAuth();
   const [store, setStore] = useState(null);
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState("");
 
   // Shows the store's name on the sign-in screen when the database allows reading it.
   useEffect(() => listenStore(storeId, setStore), [storeId]);
@@ -48,36 +46,5 @@ export default function StorePage() {
     );
   }
 
-  if (user && role === "buyer") return <BuyerDashboard initialStoreId={storeId} />;
-
-  const start = async () => {
-    setBusy(true);
-    setError("");
-    try {
-      if (user) await switchRole("buyer"); // already signed in (e.g. as a seller): no pop-up needed
-      else await signInAs("buyer");
-    } catch (e) {
-      console.error(e);
-      setError(user ? "Could not open this store. Please try again." : authErrorMessage(e));
-      setBusy(false);
-    }
-  };
-
-  return (
-    <div className="page-message">
-      <h2>{store?.name ? `Order from ${store.name}` : "Order fresh fruits & vegetables"}</h2>
-      {store?.description && <p className="muted">{store.description}</p>}
-
-      {user && role === "seller" ? (
-        <p>You're signed in as a seller. Continue as a buyer to order from this store, or sign out first.</p>
-      ) : (
-        <p>{user ? "Continue to place your order." : "Sign in with Google to place your order."}</p>
-      )}
-
-      <button className="submit-btn" onClick={start} disabled={busy}>
-        {user ? "Continue as buyer" : "Continue with Google"}
-      </button>
-      {error && <p className="error-text" role="alert">{error}</p>}
-    </div>
-  );
+  return <BuyerDashboard initialStoreId={storeId} />;
 }
