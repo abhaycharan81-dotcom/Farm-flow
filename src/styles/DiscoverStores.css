@@ -1,0 +1,72 @@
+.discover-container {
+  padding: 20px;
+}
+
+.discover-container h2 {
+  margin-bottom: 20px;
+  color: #333;
+}
+
+/* As many columns as fit; one column on a phone instead of two cramped ones */
+.store-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 20px;
+}
+
+.store-card {
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  transition: transform 0.3s;
+}
+
+.store-card:hover {
+  transform: translateY(-5px);
+}
+
+.store-banner {
+  height: 110px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  font-weight: bold;
+  color: #fff;
+  background: #2196f3;
+}
+
+.store-info {
+  padding: 15px;
+}
+
+.store-name {
+  margin: 0;
+  font-size: 1.2rem;
+  color: #2196f3;
+}
+
+.store-description {
+  margin: 8px 0;
+  color: #555;
+  font-size: 0.95rem;
+}
+
+.visit-btn {
+  background-color: #2196f3;
+  color: white;
+  border: none;
+  padding: 10px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.visit-btn:hover {
+  background-color: #1976d2;
+}
+
+@media (max-width: 700px) {
+  .discover-container { padding: 0; }
+}
