@@ -1,4 +1,5 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import BackButton from "./BackButton";
 import "../styles/Common.css";
 import "../styles/Dashboard.css";
 
@@ -36,7 +37,7 @@ const UserBlock = ({ user }) => (
  * items: [{ label, badge?: number, done?: boolean }]   step: 1-based index of the active item
  */
 export default function DashboardLayout({
-  theme, items, step, onSelect, onSignOut, user, menuTitle = "Menu", alertCount = 0, children,
+  theme, items, step, onSelect, onBack, onSignOut, user, menuTitle = "Menu", alertCount = 0, children,
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const openBtn = useRef(null);
@@ -94,6 +95,7 @@ export default function DashboardLayout({
 
       {/* Mobile top bar */}
       <header className="mobile-header">
+        {onBack && <BackButton className="mobile-back" onClick={onBack} />}
         <h1 className="mobile-title">{items[step - 1]?.label}</h1>
         <button
           ref={openBtn}
@@ -123,6 +125,11 @@ export default function DashboardLayout({
       </nav>
 
       <main className="main-content">
+        {onBack && (
+          <div className="desktop-back-toolbar">
+            <BackButton onClick={onBack} />
+          </div>
+        )}
         <div className="step-content">{children}</div>
       </main>
     </div>

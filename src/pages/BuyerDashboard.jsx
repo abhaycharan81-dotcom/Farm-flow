@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { CartProvider, useCart } from "../context/CartContext";
 import { listenStore } from "../services/db";
+import BackButton from "../components/BackButton";
 import "../styles/Common.css";
 import "../styles/Dashboard.css";
 import DiscoverStores from "../components/DiscoverStores";
@@ -100,6 +101,14 @@ function Inner({ initialStoreId }) {
     navigate(initialStoreId ? `/store/${initialStoreId}` : "/");
   };
 
+  const handleBack = () => {
+    if (initialStoreId && step === 2) {
+      navigate("/");
+      return;
+    }
+    setStep((currentStep) => Math.max(1, currentStep - 1));
+  };
+
   // Buttons with the .nav-item class: this is the markup the new Dashboard.css styles.
   const renderItems = () => (
     <ul>
@@ -131,6 +140,7 @@ function Inner({ initialStoreId }) {
 
       {/* Mobile top bar: current step + profile icon */}
       <header className="mobile-header">
+        {step > 1 && <BackButton className="mobile-back" onClick={handleBack} />}
         <h1 className="mobile-title">{currentItem.label}</h1>
         <button
           ref={openBtn}
@@ -161,6 +171,11 @@ function Inner({ initialStoreId }) {
       </nav>
 
       <main className="main-content">
+        {step > 1 && (
+          <div className="desktop-back-toolbar">
+            <BackButton onClick={handleBack} />
+          </div>
+        )}
         <div className="step-content">{content}</div>
       </main>
     </div>

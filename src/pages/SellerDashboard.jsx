@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { listenStore, listenProducts, listenStoreOrders } from "../services/db";
@@ -77,6 +77,7 @@ const SellerDashboard = () => {
       items={items}
       step={step}
       onSelect={goTo}
+      onBack={index > 0 ? () => goTo(index - 1) : undefined}
       onSignOut={handleSignOut}
       user={user}
       menuTitle="Store menu"

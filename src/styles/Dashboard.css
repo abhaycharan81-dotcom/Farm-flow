@@ -63,6 +63,24 @@
 /* ---------- main area ---------- */
 .main-content { flex: 1; padding: 20px; min-width: 0; }
 .step-content { background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
+.desktop-back-toolbar { display: flex; margin-bottom: 12px; }
+.back-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  border: 1px solid #ddd;
+  border-radius: 50%;
+  background: #fff;
+  color: var(--accent, var(--color-primary));
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+}
+.back-button:hover { background: var(--accent-soft, #e8f3e8); }
+.back-button:active { transform: scale(0.95); }
+.mobile-back { display: none; }
 
 /* Mobile-only elements: hidden on desktop */
 .mobile-header,
@@ -86,7 +104,17 @@
     background: #fff;
     border-bottom: 1px solid #e6e6e6;
   }
-  .mobile-title { margin: 0; font-size: 1.1rem; color: #333; }
+  .mobile-back { display: inline-flex; flex: none; }
+  .mobile-title {
+    flex: 1;
+    min-width: 0;
+    margin: 0;
+    overflow: hidden;
+    color: #333;
+    font-size: 1.1rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
 
   .profile-icon-btn {
     position: relative;
@@ -148,6 +176,7 @@
 
   .drawer-signout { margin-top: 16px; padding: 12px; border: 1px solid #c62828; border-radius: 8px; background: #fff; color: #c62828; font-size: 1rem; cursor: pointer; }
   .main-content { padding: 12px; }
+  .desktop-back-toolbar { display: none; }
   .step-content { padding: 14px; }
 
   /* 16px inputs stop iOS Safari zooming in on focus */
