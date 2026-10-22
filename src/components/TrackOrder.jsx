@@ -4,7 +4,7 @@ import { listenBuyerOrders } from "../services/db";
 import { ORDER_STATUSES, CANCELLED, formatMoney, formatDate } from "../utils/constants";
 
 // Live: the status moves on screen as soon as the seller updates it (RTDB listener).
-const TrackOrder = () => {
+const TrackOrder = ({ storeId }) => {
   const { user } = useAuth();
   const [orders, setOrders] = useState(null);
   useEffect(() => {
@@ -25,8 +25,8 @@ const TrackOrder = () => {
     <div>
       <h3>Track Order</h3>
       {orders === null && <><div className="skeleton" /><div className="skeleton" /></>}
-      {orders && !orders.length && <p className="muted">You haven't placed an order yet.</p>}
-      {orders?.map((o) => {
+      {orders && !(storeId ? orders.some((order) => order.storeId === storeId) : orders.length) && <p className="muted">You haven't placed an order yet.</p>}
+      {orders?.filter((order) => !storeId || order.storeId === storeId).map((o) => {
         const cancelled = o.status === CANCELLED;
         const current = ORDER_STATUSES.indexOf(o.status);
         return (

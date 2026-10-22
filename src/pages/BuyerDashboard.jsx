@@ -71,38 +71,45 @@ function Inner({ initialStoreId }) {
 
   const content = {
     1: <DiscoverStores onVisit={visit} />,
-    2: <BrowseProducts store={store} onDiscover={() => setStep(1)} onCart={() => setStep(3)} />,
-    3: <CartCheckout store={store} onPlaced={() => setStep(4)} onBrowse={() => setStep(store ? 2 : 1)} />,
-    4: <TrackOrder />,
+    2: <BrowseProducts store={store} restricted={Boolean(initialStoreId)} onDiscover={initialStoreId ? undefined : () => setStep(1)} onCart={() => setStep(3)} />,
+    3: <CartCheckout store={store} onPlaced={() => setStep(4)} onBrowse={() => setStep(initialStoreId || store ? 2 : 1)} />,
+    4: <TrackOrder storeId={initialStoreId} />,
   }[step];
 
-  const items = [
-    { label: "Discover Stores" },
-    { label: "Browse Products" },
-    { label: "Cart & Checkout", badge: count },
-    { label: "Track Order" },
-  ];
+  const items = initialStoreId
+    ? [
+        { step: 2, label: "Browse Products" },
+        { step: 3, label: "Cart & Checkout", badge: count },
+        { step: 4, label: "Track Order" },
+      ]
+    : [
+        { step: 1, label: "Discover Stores" },
+        { step: 2, label: "Browse Products" },
+        { step: 3, label: "Cart & Checkout", badge: count },
+        { step: 4, label: "Track Order" },
+      ];
+  const currentItem = items.find((item) => item.step === step);
 
-  const goTo = (i) => {
-    setStep(i + 1);
+  const goTo = (nextStep) => {
+    setStep(nextStep);
     setMenuOpen(false);
   };
 
   const handleSignOut = async () => {
     await logout();
-    navigate("/");
+    navigate(initialStoreId ? `/store/${initialStoreId}` : "/");
   };
 
   // Buttons with the .nav-item class: this is the markup the new Dashboard.css styles.
   const renderItems = () => (
     <ul>
-      {items.map((it, i) => (
-        <li key={i}>
+      {items.map((it) => (
+        <li key={it.step}>
           <button
             type="button"
-            className={`nav-item${step === i + 1 ? " active" : ""}`}
-            aria-current={step === i + 1 ? "page" : undefined}
-            onClick={() => goTo(i)}
+            className={`nav-item${step === it.step ? " active" : ""}`}
+            aria-current={step === it.step ? "page" : undefined}
+            onClick={() => goTo(it.step)}
           >
             <span>{it.label}</span>
             {it.badge > 0 && <span className="nav-badge">{it.badge}</span>}
@@ -118,13 +125,13 @@ function Inner({ initialStoreId }) {
       <aside className="sidebar">
         <UserBlock user={user} />
         {renderItems()}
-        <button type="button" className="nav-item" onClick={() => navigate("/create-store")}>Create a store</button>
+        {!initialStoreId && <button type="button" className="nav-item" onClick={() => navigate("/create-store")}>Create a store</button>}
         {user && <button type="button" className="link-btn" onClick={handleSignOut}>Sign out</button>}
       </aside>
 
       {/* Mobile top bar: current step + profile icon */}
       <header className="mobile-header">
-        <h1 className="mobile-title">{items[step - 1].label}</h1>
+        <h1 className="mobile-title">{currentItem.label}</h1>
         <button
           ref={openBtn}
           type="button"
@@ -149,7 +156,7 @@ function Inner({ initialStoreId }) {
         </div>
         <UserBlock user={user} />
         {renderItems()}
-        <button type="button" className="nav-item" onClick={() => { setMenuOpen(false); navigate("/create-store"); }}>Create a store</button>
+        {!initialStoreId && <button type="button" className="nav-item" onClick={() => { setMenuOpen(false); navigate("/create-store"); }}>Create a store</button>}
         {user && <button type="button" className="drawer-signout" onClick={handleSignOut}>Sign out</button>}
       </nav>
 
@@ -161,7 +168,7 @@ function Inner({ initialStoreId }) {
 }
 
 const BuyerDashboard = ({ initialStoreId }) => (
-  <CartProvider>
+  <CartProvider key={initialStoreId || "platform"} restrictedStoreId={initialStoreId}>
     <Inner initialStoreId={initialStoreId} />
   </CartProvider>
 );

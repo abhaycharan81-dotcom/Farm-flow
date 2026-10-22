@@ -5,7 +5,7 @@ import { emojiOf } from "../data/catalogue";
 import { formatMoney, telLink } from "../utils/constants";
 
 // preview: a seller looking at their own store. Same screen, but ordering is switched off.
-const BrowseProducts = ({ store, onDiscover, onCart, preview = false }) => {
+const BrowseProducts = ({ store, onDiscover, onCart, preview = false, restricted = false }) => {
   const [products, setProducts] = useState(null);
   const [filter, setFilter] = useState("All");
   const [query, setQuery] = useState("");
@@ -20,9 +20,9 @@ const BrowseProducts = ({ store, onDiscover, onCart, preview = false }) => {
   if (!store) {
     return (
       <div>
-        <h3>Browse Products</h3>
-        <p className="muted">Pick a store first to see what's fresh today.</p>
-        <button className="submit-btn" onClick={onDiscover}>Discover stores</button>
+        <h3>{restricted ? "Store unavailable" : "Browse Products"}</h3>
+        <p className="muted">{restricted ? "This shared store link is unavailable. Check the link and try again." : "Pick a store first to see what's fresh today."}</p>
+        {!restricted && <button className="submit-btn" onClick={onDiscover}>Discover stores</button>}
       </div>
     );
   }
