@@ -34,7 +34,7 @@
   font-size: 3rem;
   font-weight: bold;
   color: #fff;
-  background: #2196f3;
+  background: var(--color-primary);
 }
 
 .store-info {
@@ -44,7 +44,7 @@
 .store-name {
   margin: 0;
   font-size: 1.2rem;
-  color: #2196f3;
+  color: var(--color-primary);
 }
 
 .store-description {
@@ -54,7 +54,7 @@
 }
 
 .visit-btn {
-  background-color: #2196f3;
+  background-color: var(--color-primary);
   color: white;
   border: none;
   padding: 10px 14px;
@@ -64,7 +64,7 @@
 }
 
 .visit-btn:hover {
-  background-color: #1976d2;
+  background-color: #1b5e20;
 }
 
 @media (max-width: 700px) {

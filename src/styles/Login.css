@@ -4,7 +4,7 @@
   align-items: center;
   justify-content: center;
   height: 100vh;
-  background: linear-gradient(135deg, #f9f9f9, #e0ffe0);
+  background: linear-gradient(135deg, var(--color-background), #e8f3e8);
   font-family: Arial, sans-serif;
 }
 
@@ -29,12 +29,12 @@
 }
 
 .create-store {
-  background-color: #4caf50;
+  background-color: var(--color-primary);
   color: white;
 }
 
 .buy-fruits {
-  background-color: #ff9800;
+  background-color: var(--color-accent);
   color: white;
 }
 

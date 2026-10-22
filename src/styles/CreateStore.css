@@ -35,6 +35,6 @@
 
 .create-store-form input:focus,
 .create-store-form textarea:focus {
-  border-color: var(--accent, #4caf50);
+  border-color: var(--accent, var(--color-primary));
   outline: none;
 }

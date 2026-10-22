@@ -154,9 +154,6 @@ function Inner({ initialStoreId }) {
       </nav>
 
       <main className="main-content">
-        <div className="progress-bar">
-          <div className="progress" style={{ width: `${(step / items.length) * 100}%` }}></div>
-        </div>
         <div className="step-content">{content}</div>
       </main>
     </div>
