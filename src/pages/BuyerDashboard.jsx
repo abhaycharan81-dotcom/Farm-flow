@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import { authErrorMessage, useAuth } from "../context/AuthContext";
 import { CartProvider, useCart } from "../context/CartContext";
 import { listenStore } from "../services/db";
 import BackButton from "../components/BackButton";
@@ -41,10 +41,12 @@ function Inner({ initialStoreId }) {
   const [step, setStep] = useState(initialStoreId ? 2 : 1);
   const [store, setStore] = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [signInBusy, setSignInBusy] = useState(false);
+  const [signInError, setSignInError] = useState("");
   const openBtn = useRef(null);
   const closeBtn = useRef(null);
   const { count } = useCart();
-  const { user, logout } = useAuth();
+  const { user, logout, signIn } = useAuth();
   const navigate = useNavigate();
 
   // Opened from a shared link: load that store straight away.
@@ -101,6 +103,19 @@ function Inner({ initialStoreId }) {
     navigate(initialStoreId ? `/store/${initialStoreId}` : "/");
   };
 
+  const handleSignIn = async () => {
+    setSignInBusy(true);
+    setSignInError("");
+    try {
+      await signIn();
+      setMenuOpen(false);
+    } catch (error) {
+      setSignInError(authErrorMessage(error));
+    } finally {
+      setSignInBusy(false);
+    }
+  };
+
   const handleBack = () => {
     if (initialStoreId && step === 2) {
       navigate("/");
@@ -135,6 +150,8 @@ function Inner({ initialStoreId }) {
         <UserBlock user={user} />
         {renderItems()}
         {!initialStoreId && <button type="button" className="nav-item" onClick={() => navigate("/create-store")}>Create a store</button>}
+        {!user && <button type="button" className="nav-item" onClick={handleSignIn} disabled={signInBusy}>{signInBusy ? "Signing in…" : "Sign in"}</button>}
+        {signInError && <p className="error-text" role="alert">{signInError}</p>}
         {user && <button type="button" className="link-btn" onClick={handleSignOut}>Sign out</button>}
       </aside>
 
@@ -167,6 +184,8 @@ function Inner({ initialStoreId }) {
         <UserBlock user={user} />
         {renderItems()}
         {!initialStoreId && <button type="button" className="nav-item" onClick={() => { setMenuOpen(false); navigate("/create-store"); }}>Create a store</button>}
+        {!user && <button type="button" className="nav-item" onClick={handleSignIn} disabled={signInBusy}>{signInBusy ? "Signing in…" : "Sign in"}</button>}
+        {signInError && <p className="error-text" role="alert">{signInError}</p>}
         {user && <button type="button" className="drawer-signout" onClick={handleSignOut}>Sign out</button>}
       </nav>
 

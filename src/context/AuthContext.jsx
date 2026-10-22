@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useRef, useState } from "react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { onAuthStateChanged, signOut, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { auth } from "../firebase";
 import { getUserRole, saveUserRole } from "../services/db";
@@ -39,16 +39,22 @@ export function AuthProvider({ children }) {
     });
   }, []);
 
-  // Google sign-in. `nextRole` is what the person picked on the login screen.
-  const signInAs = async (nextRole) => {
+  // Google sign-in. A role is only saved when the person chooses a role-specific action.
+  const authenticate = async (nextRole) => {
     signingIn.current = true;
     let current = null;
     try {
       const result = await signInWithPopup(auth, new GoogleAuthProvider());
       current = result.user;
-      await saveUserRole(current.uid, nextRole);
+      let resolvedRole;
+      if (nextRole) {
+        await saveUserRole(current.uid, nextRole);
+        resolvedRole = nextRole;
+      } else {
+        resolvedRole = await getUserRole(current.uid);
+      }
       setUser(current);
-      setRole(nextRole);
+      setRole(resolvedRole);
       setLoading(false);
       return current;
     } catch (error) {
@@ -65,6 +71,9 @@ export function AuthProvider({ children }) {
     }
   };
 
+  const signIn = () => authenticate();
+  const signInAs = (nextRole) => authenticate(nextRole);
+
   // Change the role of the person who is already signed in (no Google pop-up needed).
   const switchRole = async (nextRole) => {
     if (!user) return;
@@ -75,7 +84,7 @@ export function AuthProvider({ children }) {
   const logout = () => signOut(auth);
 
   return (
-    <AuthContext.Provider value={{ user, role, loading, signInAs, switchRole, logout }}>
+    <AuthContext.Provider value={{ user, role, loading, signIn, signInAs, switchRole, logout }}>
       {children}
     </AuthContext.Provider>
   );
