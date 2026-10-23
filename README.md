@@ -1,5 +1,18 @@
 # React + Vite
 
+## Automatic Firebase Hosting deployment
+
+Pushing a commit to `main` runs the Firebase Hosting workflow. It installs
+dependencies, builds the app, and deploys the `dist` output to the live Hosting
+site. Pull requests and commits on other branches do not deploy.
+
+Before the first deployment, add a GitHub Actions repository secret named
+`FIREBASE_SERVICE_ACCOUNT_FARM_FLOW_REACT_APP` containing the JSON key for a
+Google Cloud service account that has permission to deploy Firebase Hosting to
+the `farm-flow-react-app` project. Add it under **Settings → Secrets and
+variables → Actions → New repository secret**. Do not commit the service
+account key to the repository.
+
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
 Currently, two official plugins are available:
